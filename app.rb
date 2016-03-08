@@ -28,6 +28,9 @@ end
 # get venue by id
 get '/venues/:id' do
   "params id == #{params[:id]}"
+  object_id = BSON::ObjectId.from_string(params[:id])
+  db = settings.mongo_db
+  db.find({:_id => object_id})
 end
 
 # /venues
