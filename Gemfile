@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
 gem 'sinatra'
-gem 'mongodb'
 gem 'mongo'
+gem 'mongoid'
 gem 'bson_ext'

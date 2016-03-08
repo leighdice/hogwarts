@@ -1,10 +1,12 @@
 require 'sinatra'
-require 'mongo'
-require 'json/ext'
+require 'mongoid'
+require_relative 'models/venue'
 
-configure do
-  db = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'venues')  
-  set :mongo_db, db[:venues]
+#Mongoid.load!("mongoid.yml")
+
+configure :development do
+  enable :logging, :dump_errors, :run, :sessions
+  Mongoid.load!(File.join(File.dirname(__FILE__), "config", "mongoid.yml"))
 end
 
 get '/' do
@@ -21,25 +23,20 @@ end
 # get all venues
 get '/venues' do
   content_type :json
-  settings.mongo_db.find.to_a.to_json
+  Venue.all.to_json
 end
 
 # /venues/:id
 # get venue by id
 get '/venues/:id' do
-  "params id == #{params[:id]}"
-  object_id = BSON::ObjectId.from_string(params[:id])
-  db = settings.mongo_db
-  db.find({:_id => object_id})
+
 end
 
 # /venues
 # post new venue
-post '/venues/?' do
-  content_type :json
-  db = settings.mongo_db
-  result = db.insert_one params
-  db.find(:_id => result.inserted_id).to_a.first.to_json
+post '/venues/new' do
+  venue = Venue.new(params[:new])
+  venue.save
 end
 
 # /venues/:id
