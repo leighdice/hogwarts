@@ -1,0 +1,20 @@
+{ 
+  venue: "Roundhouse"
+  address: "Chalk Farm Road, London NW1 8EH"
+}
+{
+  venue: "Electrowerkz"
+  address: "7 Torrens St, London EC1V 1NQ"
+}
+{
+  venue: "Birthdays"
+  address: "33-35 Stoke Newington Rd, London, N16 8BJ"
+}
+{
+  venue: "Corsica Studios"
+  address: "4/5 Elephant Rd, London SE17 1LB"
+}
+{
+  venue: "Bloomsbury Ballroom"
+  address: "Victoria House, Bloomsbury Square, London WC1B 4DA"
+}
