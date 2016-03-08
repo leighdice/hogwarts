@@ -1,5 +1,10 @@
 require 'sinatra'
-require 'JSON'
+require 'json/ext'
+
+configure do
+  db = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test')  
+  set :mongo_db, db[:test]
+end
 
 get '/' do
   "Hello world!"
