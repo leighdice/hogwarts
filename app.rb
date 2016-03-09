@@ -5,9 +5,14 @@ require_relative 'helpers/errors'
 
 helpers Errors
 
+not_found do
+  "This is not the url you're looking for"
+end
+
 configure :development do
   enable :logging, :dump_errors, :run, :sessions
   Mongoid.load!(File.join(File.dirname(__FILE__), "config", "mongoid.yml"))
+  Mongoid.raise_not_found_error = false
 end
 
 get '/' do
@@ -31,7 +36,7 @@ end
 # get venue by id
 get '/venues/:id' do
   venue = Venue.find(params[:id])
-  return error_not_found(venue) if venue.nil?
+  return error_not_found(params[:id]) if venue.nil?
   return venue.to_json
 end
 
@@ -49,7 +54,7 @@ end
 put '/venues/:id' do
   venue = Venue.find(params[:id])
   jdata = JSON.parse(request.body.read)
-  return error_not_found(venue) if venue.nil?
+  return error_not_found(params[:id]) if venue.nil?
 
   # jdata.each do |key, value|
   #   puts key
@@ -65,7 +70,7 @@ end
 # delete venue by id
 delete '/venues/:id' do
   venue = Venue.find(params[:id])
-  return error_not_found(venue) if venue.nil?
+  return error_not_found(params[:id]) if venue.nil?
   venue.delete
   status 202
 end
