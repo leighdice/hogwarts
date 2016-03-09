@@ -1,6 +1,6 @@
 
 setup:
-  bundle install
+	bundle install
 
 run:
 	bundle exec ruby app.rb
