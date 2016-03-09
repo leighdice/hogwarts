@@ -12,6 +12,11 @@ configure :development do
   Mongoid.raise_not_found_error = false
 end
 
+# Set default content type to json
+before do
+  content_type 'application/json'
+end
+
 # /version
 # get current version of app
 get '/version' do
@@ -21,8 +26,11 @@ end
 # /venues
 # get all venues
 get '/venues' do
-  content_type :json
-  Venue.all.to_json
+  t = request_timer_start
+  status 200
+  body
+    { :duration => request_timer_format(t),
+      :records  => Venue.all}.to_json
 end
 
 # /venues/:id
@@ -31,9 +39,7 @@ get '/venues/:id' do
   t = request_timer_start
   venue = Venue.find(params[:id])
 
-  if venue.nil?
-    return error_not_found(params[:id])
-  end
+  return error_not_found(params[:id]) if venue.nil?
 
   status 200
   body
