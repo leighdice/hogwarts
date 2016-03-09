@@ -1,6 +1,9 @@
 require 'sinatra'
 require 'mongoid'
 require_relative 'models/venue'
+require_relative 'helpers/errors'
+
+helpers Errors
 
 configure :development do
   enable :logging, :dump_errors, :run, :sessions
@@ -28,7 +31,7 @@ end
 # get venue by id
 get '/venues/:id' do
   venue = Venue.find(params[:id])
-  return {:status => 404, :message => venue.errors}.to_json if venue.nil?
+  return error_not_found(venue) if venue.nil?
   return venue.to_json
 end
 
@@ -36,7 +39,7 @@ end
 # post new venue
 post '/venues/new' do
   venue = Venue.new(JSON.parse(request.body.read))
-  return {:status => 400, :message => venue.errors}.to_json unless venue.valid?
+  return error_invalid(venue) unless venue.valid?
   venue.save
   return 201
 end
@@ -46,14 +49,14 @@ end
 put '/venues/:id' do
   venue = Venue.find(params[:id])
   jdata = JSON.parse(request.body.read)
-  return {:status => 404, :message => venue.errors}.to_json if venue.nil?
+  return error_not_found(venue) if venue.nil?
 
   # jdata.each do |key, value|
   #   puts key
   #   puts value
   # end
   venue.update(jdata)
-  return {:status => 400, :message => venue.errors}.to_json unless venue.save!
+  return error_invalid(venue) unless venue.save!
   venue.save
   return 202
 end
@@ -62,7 +65,7 @@ end
 # delete venue by id
 delete '/venues/:id' do
   venue = Venue.find(params[:id])
-  return {:status => 404, :message => venue.errors}.to_json if venue.nil?
+  return error_not_found(venue) if venue.nil?
   venue.delete
   status 202
 end
