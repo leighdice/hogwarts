@@ -29,7 +29,10 @@ end
 # /venues/:id
 # get venue by id
 get '/venues/:id' do
-
+  id = params[:id]
+  venue = Venue.find(id)
+  return {:status => 400, :message => venue.errors}.to_json if venue.nil?
+  return venue.to_json
 end
 
 # /venues
@@ -43,7 +46,10 @@ end
 
 # /venues/:id
 # delete venue by id
-delete '/venues/:id/' do
-  "Deleting id: #{params[:id]}"
+delete '/venues/:id' do
+  venue = Venue.find(params[:id])
+  return {:status => 404, :message => venue.errors}.to_json if venue.nil?
+  venue.delete
+  status 202
 end
 
