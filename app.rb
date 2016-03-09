@@ -37,7 +37,7 @@ end
 post '/venues/new' do
   jdata = JSON.parse(request.body.read)
   venue = Venue.new(jdata)
-  return status 400 unless venue.valid?
+  return {:status => 400, :message => venue.errors}.to_json unless venue.valid?
   return 201
 end
 
