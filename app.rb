@@ -6,7 +6,7 @@ require_relative 'helpers/errors'
 helpers Errors
 
 not_found do
-  "This is not the url you're looking for"
+  {:status => 404, :message => "This is not the url you're looking for"}.to_json
 end
 
 configure :development do
@@ -15,14 +15,10 @@ configure :development do
   Mongoid.raise_not_found_error = false
 end
 
-get '/' do
-  "Hello world!"
-end
-
 # /version
 # get current version of app
 get '/version' do
-  "1.0.0"
+  "0.0.1"
 end
 
 # /venues
@@ -37,7 +33,7 @@ end
 get '/venues/:id' do
   venue = Venue.find(params[:id])
   return error_not_found(params[:id]) if venue.nil?
-  return venue.to_json
+  venue.to_json
 end
 
 # /venues
@@ -46,7 +42,7 @@ post '/venues/new' do
   venue = Venue.new(JSON.parse(request.body.read))
   return error_invalid(venue) unless venue.valid?
   venue.save
-  return 201
+  status 201
 end
 
 # /venues/:id
@@ -63,7 +59,7 @@ put '/venues/:id' do
   end
 
   venue.save
-  return 202
+  status 204
 end
 
 # /venues/:id
