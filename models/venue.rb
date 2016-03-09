@@ -1,6 +1,7 @@
 class Venue
 
   include Mongoid::Document
+  include Mongoid::Timestamps::Created
 
   field :name,            type: String
   field :address_line_1,  type: String
