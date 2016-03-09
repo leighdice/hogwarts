@@ -5,10 +5,6 @@ require_relative 'helpers/errors'
 
 helpers Errors
 
-not_found do
-  {:status => 404, :message => "This is not the url you're looking for"}.to_json
-end
-
 configure :development do
   enable :logging, :dump_errors, :run, :sessions
   Mongoid.load!(File.join(File.dirname(__FILE__), "config", "mongoid.yml"))
@@ -32,8 +28,7 @@ end
 # get venue by id
 get '/venues/:id' do
   venue = Venue.find(params[:id])
-  return error_not_found(params[:id]) if venue.nil?
-  venue.to_json
+  venue.nil? ? error_not_found(params[:id]) : venue.to_json
 end
 
 # /venues
