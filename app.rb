@@ -35,8 +35,10 @@ end
 # /venues
 # post new venue
 post '/venues/new' do
-  venue = Venue.new(params[:new])
-  venue.save
+  jdata = JSON.parse(request.body.read)
+  venue = Venue.new(jdata)
+  return status 400 unless venue.valid?
+  return 201
 end
 
 # /venues/:id
