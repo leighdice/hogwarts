@@ -56,12 +56,12 @@ put '/venues/:id' do
   jdata = JSON.parse(request.body.read)
   return error_not_found(params[:id]) if venue.nil?
 
-  # jdata.each do |key, value|
-  #   puts key
-  #   puts value
-  # end
-  venue.update(jdata)
-  return error_invalid(venue) unless venue.save!
+  begin
+    venue.update_attributes!(jdata)
+  rescue Mongoid::Errors::Validations
+    return error_invalid(venue)
+  end
+
   venue.save
   return 202
 end
