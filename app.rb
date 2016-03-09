@@ -72,6 +72,6 @@ delete '/venues/:id' do
   venue = Venue.find(params[:id])
   return error_not_found(params[:id]) if venue.nil?
   venue.delete
-  status 202
+  status 204
 end
 
