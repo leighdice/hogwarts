@@ -15,8 +15,6 @@ module RequestTimer
   end
 
   def request_timer_format(t)
-    {
-      :duration => request_timer_calculate(t).to_s
-    }.to_json
+    request_timer_calculate(t).to_s
   end
 end

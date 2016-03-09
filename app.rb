@@ -35,9 +35,10 @@ get '/venues/:id' do
     return error_not_found(params[:id])
   end
 
-  venue.to_json
   status 200
-  body request_timer_format(t)
+  body
+    { :duration => request_timer_format(t),
+      :records  => venue.to_a}.to_json
 end
 
 # /venues
