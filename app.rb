@@ -2,8 +2,9 @@ require 'sinatra'
 require 'mongoid'
 require_relative 'models/venue'
 require_relative 'helpers/errors'
+require_relative 'helpers/request-timer'
 
-helpers Errors
+helpers Errors, RequestTimer
 
 configure :development do
   enable :logging, :dump_errors, :run, :sessions
@@ -27,8 +28,16 @@ end
 # /venues/:id
 # get venue by id
 get '/venues/:id' do
+  t = request_timer_start
   venue = Venue.find(params[:id])
-  venue.nil? ? error_not_found(params[:id]) : venue.to_json
+
+  if venue.nil?
+    return error_not_found(params[:id])
+  end
+
+  venue.to_json
+  status 200
+  body request_timer_format(t)
 end
 
 # /venues
