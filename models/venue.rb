@@ -11,10 +11,7 @@ class Venue
   field :country,         type: String
   field :postcode,        type: String
 
-  validate :name_cannot_be_empty
-  validates_presence_of :address_line_1, :city, :country, :postcode
-
-  def name_cannot_be_empty
-    errors.add(:name, 'name cannot be empty') if name.blank?
+  validates_each :name, :address_line_1, :city, :country, :postcode do |record, attr, value|
+    record.errors.add attr, "#{attr} cannot be empty" if value.blank?
   end
 end
