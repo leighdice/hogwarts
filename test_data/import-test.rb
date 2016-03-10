@@ -1,6 +1,10 @@
 require 'pp'
 require 'json'
 
+@venue_array = []
+@exceptions = []
+
+
 def generate_venue(v, a, c, id)
 
   begin
@@ -8,6 +12,13 @@ def generate_venue(v, a, c, id)
     address_line_1 = a.match(/^[^,]+/)[0]
     address_line_2 = a.match(/,\s(.+),/)[1] || ""
     address_line_3 = a.match(/,\s(.+),/)[2] || ""
+
+    # do we need address line 3
+    if address_line_2.include? ","
+      split = a.split(", ")
+      address_line_2 = split[1]
+      address_line_3 = split[2]
+    end
 
     postcode_and_city = a.gsub(address_line_1, "")
     postcode_and_city = postcode_and_city.gsub(address_line_2, "")
@@ -45,10 +56,7 @@ end
 file = File.open("eventList.json").read
 events_dump = JSON.parse(file)
 
-@venue_array = []
-@exceptions = []
-
-events_dump.each do |e|
+events_dump.each_with_index do |e, i|
 
   if e["cities"].count > 1
     @exceptions.push(e["_id"])
@@ -60,13 +68,20 @@ events_dump.each do |e|
 
     venue = generate_venue(e["venue"], e["address"], city_name, e["id"])
     unless venue.nil?
-      @venue_array.push(venue) unless @venue_array.include?(venue)
+      @venue_array.push(venue)
     end
   end
 end
 
-@venue_array.each do |v|
-  puts JSON.pretty_generate(v)
-end
+
+
 puts "Exception: #{@exceptions.count}"
 puts "Successful: #{@venue_array.count}"
+
+puts "Removing duplicates"
+@venue_array = @venue_array.uniq { |v| v[:name]}
+puts "Successful: #{@venue_array.count}"
+
+File.open("venue_list.json","w") do |f|
+  f.write(JSON.pretty_generate(@venue_array))
+end
