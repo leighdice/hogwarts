@@ -20,12 +20,21 @@ def get_city(id)
   end
 end
 
-def generate_venue(v, a, c)
+def generate_venue(v, a, c, id)
+
+  begin
   
-  address_line_1 = a.match(/^(.+),/)[1]
-  address_line_2 = a.match(/^(.+),/)[2] || ""
-  address_line_3 = a.match(/^(.+),/)[3] || ""
-  postcode = a.match(/,[\s]\S+[\s](.+)$/)[1]
+    address_line_1 = a.match(/^(.+),/)[1]
+    address_line_2 = a.match(/^(.+),/)[2] || ""
+    address_line_3 = a.match(/^(.+),/)[3] || ""
+    
+    without_address = a.gsub(address_line_1, "")
+    puts without_address
+    postcode = without_address.match(/,[\s]\S+[\s](.+)$/)[1]
+  rescue Exception => e
+    @exceptions.push(id)
+    return nil
+  end
 
   return {
     name: v,
@@ -43,20 +52,24 @@ file = File.open("eventList.json").read
 events_dump = JSON.parse(file)
 
 venue_array = []
-exceptions = []
+@exceptions = []
 
 events_dump.each do |e|
 
-  if e["references"]["cities"].count > 1
-    exceptions.push(e["_id"])
+  if e["cities"].count > 1
+    @exceptions.push(e["_id"])
+  elsif !e["address"].include? ","
+    @exceptions.push(e["id"])
   else
-    cities = e["references"]["cities"].first
-    city_id = cities["city_id"]["$oid"]
+    cities = e["cities"].first
+    city_name = cities["name"]
 
-    venue_array.push(generate_venue(e["venue"], e["address"], get_city(city_id)))
+    venue = generate_venue(e["venue"], e["address"], city_name, e["_id"])
+    venue_array.push(venue) unless venue.nil?
   end
 end
 
 venue_array.each do |v|
   puts JSON.pretty_generate(v)
 end
+puts @exceptions.count
