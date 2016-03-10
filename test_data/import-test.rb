@@ -85,20 +85,22 @@ puts "Removing duplicates"
 @venue_array = @venue_array.uniq { |v| v[:name]}
 puts "Successful: #{@venue_array.count}"
 
-File.open("venue_list.json","w") do |f|
-  f.write(JSON.pretty_generate(@venue_array))
+# File.open("venue_list.json","w") do |f|
+#   f.write(JSON.pretty_generate(@venue_array))
+# end
+
+def post_venues_to_local
+  puts "Starting to post to local..."
+  @venue_array.each do |v|
+
+    uri = URI.parse("http://localhost:4567")
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Post.new("/venues/new")
+    request.add_field('Content-Type', 'application/json')
+    request.body = v.to_json
+    response = http.request(request)
+    puts response.body
+  end
 end
 
-puts "Starting to post to local..."
-@venue_array.each do |v|
-
-  uri = URI.parse("http://localhost:4567")
-  http = Net::HTTP.new(uri.host, uri.port)
-  #http.use_ssl = true
-  #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  request = Net::HTTP::Post.new("/venues/new")
-  request.add_field('Content-Type', 'application/json')
-  request.body = v.to_json
-  response = http.request(request)
-  puts response
-end
+#post_venues_to_local
