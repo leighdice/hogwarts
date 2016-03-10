@@ -15,5 +15,6 @@ class Venue
 
   validates_each :name, :address_line_1, :city, :country, :postcode do |record, attr, value|
     record.errors.add attr, "#{attr} cannot be empty" if value.blank?
+    record.errors.add attr, "#{attr} cannot have trailing white space" if value[-1].eql?(" ") || value[1].eql?(" ")
   end
 end
