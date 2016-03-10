@@ -1,5 +1,8 @@
 require 'pp'
 require 'json'
+require 'net/http'
+require 'uri'
+require 'openssl'
 
 @venue_array = []
 @exceptions = []
@@ -84,4 +87,18 @@ puts "Successful: #{@venue_array.count}"
 
 File.open("venue_list.json","w") do |f|
   f.write(JSON.pretty_generate(@venue_array))
+end
+
+puts "Starting to post to local..."
+@venue_array.each do |v|
+
+  uri = URI.parse("http://localhost:4567")
+  http = Net::HTTP.new(uri.host, uri.port)
+  #http.use_ssl = true
+  #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  request = Net::HTTP::Post.new("/venues/new")
+  request.add_field('Content-Type', 'application/json')
+  request.body = v.to_json
+  response = http.request(request)
+  puts response
 end
