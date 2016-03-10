@@ -1,25 +1,6 @@
 require 'pp'
 require 'json'
 
-#events_dump = JSON.parse(File.open("events_small.json").read)
-
-def get_city(id)
-
-  if id.eql? "54d8a23438fe5d27d500001c"
-    return "London"
-  elsif id.eql? "54d8a22538fe5d27d5000019"
-    return "Manchester"
-  elsif id.eql? "54d8a20238fe5d27d5000013"
-    return "Glasgow"
-  elsif id.eql? "5593f5d476b8b0c87b649241"
-    return "Cardiff"
-  elsif id.eql? "54d8a21638fe5d27d5000016"
-    return "Bristol"
-  else
-    return "undefined"
-  end
-end
-
 def generate_venue(v, a, c, id)
 
   begin
@@ -64,7 +45,7 @@ end
 file = File.open("eventList.json").read
 events_dump = JSON.parse(file)
 
-venue_array = []
+@venue_array = []
 @exceptions = []
 
 events_dump.each do |e|
@@ -78,11 +59,14 @@ events_dump.each do |e|
     city_name = cities["name"]
 
     venue = generate_venue(e["venue"], e["address"], city_name, e["id"])
-    venue_array.push(venue) unless venue.nil?
+    unless venue.nil?
+      @venue_array.push(venue) unless @venue_array.include?(venue)
+    end
   end
 end
 
-venue_array.each do |v|
+@venue_array.each do |v|
   puts JSON.pretty_generate(v)
 end
-puts @exceptions.count
+puts "Exception: #{@exceptions.count}"
+puts "Successful: #{@venue_array.count}"
