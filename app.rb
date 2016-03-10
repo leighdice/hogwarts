@@ -50,10 +50,14 @@ end
 # /venues
 # post new venue
 post '/venues/new' do
+  t = request_timer_start
   venue = Venue.new(JSON.parse(request.body.read))
   return error_invalid(venue) unless venue.valid?
   venue.save
+
   status 201
+  body
+    { :duration => request_timer_format(t)}.to_json
 end
 
 # /venues/:id
