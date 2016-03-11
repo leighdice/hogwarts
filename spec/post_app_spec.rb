@@ -87,14 +87,59 @@ describe "Post Requests" do
 
       describe "Post param with pre white space" do
 
+        it "should respond with the status 400" do
+          venue = standard_venue_json
+          venue["name"] = add_pre_white_space(venue["name"])
+          post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+
+          expect(last_response.status).to eql(400)
+        end
+
+        it "should respond with the correct error body" do
+          venue = standard_venue_json
+          venue["name"] = add_pre_white_space(venue["name"])
+          post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+
+          expect(last_response.body).to eql(trailing_white_space_error("name"))
+        end
       end
 
       describe "Post param with post white space" do
 
+        it "should respond with the status 400" do
+          venue = standard_venue_json
+          venue["name"] = add_post_white_space(venue["name"])
+          post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+
+          expect(last_response.status).to eql(400)
+        end
+
+        it "should respond with the correct error body" do
+          venue = standard_venue_json
+          venue["name"] = add_post_white_space(venue["name"])
+          post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+
+          expect(last_response.body).to eql(trailing_white_space_error("name"))
+        end
       end
 
       describe "Post param with pre and post white space" do
 
+        it "should respond with the status 400" do
+          venue = standard_venue_json
+          venue["name"] = add_pre_and_post_white_space(venue["name"])
+          post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+
+          expect(last_response.status).to eql(400)
+        end
+
+        it "should respond with the correct error body" do
+          venue = standard_venue_json
+          venue["name"] = add_pre_and_post_white_space(venue["name"])
+          post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+
+          expect(last_response.body).to eql(trailing_white_space_error("name"))
+        end
       end
     end
   end
