@@ -4,12 +4,41 @@ describe "Get Requests" do
 
   describe "Get by ID" do
 
-    it "should return venue json" do
+    id = "56e2c59861aeb62eb600002f"
 
+    it "should return venue record" do
+      get "/venues/#{id}"
+      jdata = JSON.parse(last_response.body)
+      expect(jdata["records"]).to eql([
+      {
+        "_id" => "56e2c59861aeb62eb600002f",
+        "address_line_1" => "Richmond Building",
+        "address_line_2" => "University of Bristol Students' Union",
+        "address_line_3" => "105 Queens Rd",
+        "city" => "Bristol",
+        "country" => "United Kingdom",
+        "county" => "",
+        "created_at" => "2016-03-11T13:18:16+00:00",
+        "name" => "Anson Rooms",
+        "postcode" => "BS8 1LN",
+        "updated_at" => "2016-03-11T13:18:16+00:00"
+      }])
     end
 
     it "should response with code 200" do
+      get "/venues/#{id}"
+      expect(last_response.status).to eql(200)
+    end
 
+    it "should respond with duration in header" do
+      get "/venues/#{id}"
+      expect(last_response.header["x-duration"].to_s).to match(/(\d)$/)
+    end
+
+    it "should respond with duration in body" do
+      get "/venues/#{id}"
+      jdata = JSON.parse(last_response.body)
+      expect(jdata["duration"]).to match(/(\d)$/)
     end
   end
 
@@ -37,7 +66,13 @@ describe "Get Requests" do
     end
 
     it "should respond with 200" do
+      get '/venues'
+      expect(last_response.status).to eql(200)
+    end
 
+    it "should respond with duration in header" do
+      get '/venues'
+      expect(last_response.header["x-duration"].to_s).to match(/(\d)$/)
     end
   end
 
