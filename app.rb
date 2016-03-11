@@ -31,7 +31,7 @@ end
 # get current version of app
 get '/version' do
   status 200
-  headers["X-Duration"] = request_timer_format(t)
+  headers["X-duration"] = request_timer_format(t)
   body
     { :version => "0.0.1"}.to_json
 end
@@ -41,7 +41,7 @@ end
 get '/venues' do
   t = request_timer_start
   status 200
-  headers["X-Duration"] = request_timer_format(t)
+  headers["X-duration"] = request_timer_format(t)
   body
     { :duration => request_timer_format(t),
       :records  => Venue.all}.to_json
@@ -56,7 +56,7 @@ get '/venues/:id' do
   return error_not_found(params[:id]) if venue.nil?
 
   status 200
-  headers["X-Duration"] = request_timer_format(t)
+  headers["X-duration"] = request_timer_format(t)
   body
     { :duration => request_timer_format(t),
       :records  => venue.to_a}.to_json
@@ -92,7 +92,7 @@ put '/venues/:id' do
 
   venue.save
   status 204
-  headers["X-Duration"] = request_timer_format(t)
+  headers["X-duration"] = request_timer_format(t)
 end
 
 # /venues/:id
@@ -105,6 +105,6 @@ delete '/venues/:id' do
 
   venue.delete
   status 204
-  headers["X-Duration"] = request_timer_format(t)
+  headers["X-duration"] = request_timer_format(t)
 end
 
