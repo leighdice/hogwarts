@@ -2,7 +2,7 @@ module TestHelper
 
   # JSONs
 
-  def empty_param_json
+  def standard_venue_json
     return {
       "address_line_1" => "Richmond Building",
       "address_line_2" => "University of Bristol Students' Union",
@@ -15,8 +15,8 @@ module TestHelper
     }
   end
 
-  def json_with_empty_param(p)
-    j = empty_param_json
+  def venue_with_empty_param(p)
+    j = standard_venue_json
     j[p] = ""
     return j
   end
