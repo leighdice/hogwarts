@@ -52,10 +52,7 @@ describe "Get Requests" do
     it "should return body error" do
       get '/venues/123'
       jdata = last_response.body
-      expect(jdata).to eql({ :error => "Unable to find venue",
-                              :code  => 404,
-                              :description => "Not found",
-                              :messages => ["Unable to find venue by id: 123"]}.to_json)
+      expect(jdata).to eql(not_found_with_id_error("123"))
     end
   end
 
