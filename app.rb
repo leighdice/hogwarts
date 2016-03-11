@@ -17,6 +17,16 @@ before do
   content_type 'application/json'
 end
 
+# set default 404 message
+error Sinatra::NotFound do
+  content_type :json
+  (status 404 ; body
+  { :error => "Link does not exist",
+    :code => 404,
+    :description => "Not found",
+    :messages => ["The url you requested is invalid"]}.to_json)
+end
+
 # /version
 # get current version of app
 get '/version' do
