@@ -21,6 +21,7 @@ class Venue
   private
 
   def self.has_trailing_space?(value)
-    return value[-1].eql?(" ") || value[1].eql?(" ") ? true : false
+    split = value.split(//)
+    return split.first.eql?(" ") || split.last.eql?(" ") ? true : false
   end
 end
