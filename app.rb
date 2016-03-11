@@ -30,6 +30,7 @@ end
 # /version
 # get current version of app
 get '/version' do
+  t = request_timer_start
   status 200
   headers["X-duration"] = request_timer_format(t)
   body
