@@ -22,4 +22,11 @@ module TestHelper
   end
 
   # Error Responses
+
+  def empty_param_error(p)
+    return { :error => "Validation Error",
+      :code  => 400,
+      :description => "Bad Request",
+      :messages => { "#{p}":["#{p} cannot be empty"]}}.to_json
+  end
 end

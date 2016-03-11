@@ -18,10 +18,7 @@ describe "Post Requests" do
         it "should respond with correct error body" do
           wo_name = json_with_empty_param("name")
           post('/venues/new', wo_name.to_json, { "CONTENT_TYPE" => "application/json" })
-          expect(last_response.body).to eql({ :error => "Validation Error",
-                                              :code  => 400,
-                                              :description => "Bad Request",
-                                              :messages => { "name":["name cannot be empty"]}}.to_json)
+          expect(last_response.body).to eql(empty_param_error("name"))
         end
       end
 
@@ -36,10 +33,7 @@ describe "Post Requests" do
         it "should respond with correct error body" do
           wo_a_l_1 = json_with_empty_param("address_line_1")
           post('/venues/new', wo_a_l_1.to_json, { "CONTENT_TYPE" => "application/json" })
-          expect(last_response.body).to eql({ :error => "Validation Error",
-                                              :code  => 400,
-                                              :description => "Bad Request",
-                                              :messages => { "address_line_1":["address_line_1 cannot be empty"]}}.to_json)
+          expect(last_response.body).to eql(empty_param_error("address_line_1"))
         end
       end
 
@@ -54,10 +48,7 @@ describe "Post Requests" do
         it "should respond with correct error body" do
           wo_city = json_with_empty_param("city")
           post('/venues/new', wo_city.to_json, { "CONTENT_TYPE" => "application/json" })
-          expect(last_response.body).to eql({ :error => "Validation Error",
-                                              :code  => 400,
-                                              :description => "Bad Request",
-                                              :messages => { "city":["city cannot be empty"]}}.to_json)
+          expect(last_response.body).to eql(empty_param_error("city"))
         end
       end
 
@@ -72,10 +63,7 @@ describe "Post Requests" do
         it "should respond with correct error body" do
           wo_country = json_with_empty_param("country")
           post('/venues/new', wo_country.to_json, { "CONTENT_TYPE" => "application/json" })
-          expect(last_response.body).to eql({ :error => "Validation Error",
-                                              :code  => 400,
-                                              :description => "Bad Request",
-                                              :messages => { "country":["country cannot be empty"]}}.to_json)
+          expect(last_response.body).to eql(empty_param_error("country"))
         end
       end
 
@@ -90,10 +78,7 @@ describe "Post Requests" do
         it "should respond with correct error body" do
           wo_postcode = json_with_empty_param("postcode")
           post('/venues/new', wo_postcode.to_json, { "CONTENT_TYPE" => "application/json" })
-          expect(last_response.body).to eql({ :error => "Validation Error",
-                                              :code  => 400,
-                                              :description => "Bad Request",
-                                              :messages => { "postcode":["postcode cannot be empty"]}}.to_json)
+          expect(last_response.body).to eql(empty_param_error("postcode"))
         end
       end
     end
