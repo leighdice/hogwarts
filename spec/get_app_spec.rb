@@ -62,7 +62,7 @@ describe "Get Requests" do
   describe "Get all venues" do
 
     it "should return array of venues" do
-
+      puts "TODO"
     end
 
     it "should respond with 200" do
@@ -73,6 +73,12 @@ describe "Get Requests" do
     it "should respond with duration in header" do
       get '/venues'
       expect(last_response.header["x-duration"].to_s).to match(/(\d)$/)
+    end
+
+    it "should respond with duration in body" do
+      get "/venues"
+      jdata = JSON.parse(last_response.body)
+      expect(jdata["duration"]).to match(/(\d)$/)
     end
   end
 
