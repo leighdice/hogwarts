@@ -21,7 +21,7 @@ end
 error Sinatra::NotFound do
   content_type :json
   (status 404 ; body
-  { :error => "Link does not exist",
+  { :error => "These are not the links you're looking for",
     :code => 404,
     :description => "Not found",
     :messages => ["The url you requested is invalid"]}.to_json)
@@ -30,7 +30,9 @@ end
 # /version
 # get current version of app
 get '/version' do
-  "0.0.1"
+  status 200
+  body
+    { :version => "0.0.1"}.to_json
 end
 
 # /venues
