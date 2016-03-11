@@ -62,7 +62,10 @@ describe "Get Requests" do
   describe "Get all venues" do
 
     it "should return array of venues" do
-      puts "TODO"
+      get '/venues'
+      jdata = JSON.parse(last_response.body)
+      # Check for an array for now, need to be cleverer with this
+      expect(jdata["records"]).to be_an_instance_of(Array) 
     end
 
     it "should respond with 200" do
