@@ -52,4 +52,11 @@ module TestHelper
       :description => "Bad Request",
       :messages => { "#{p}":["#{p} cannot have trailing white space"]}}.to_json
   end
+
+  def not_found_with_id_error(id)
+    return { :error => "Unable to find venue",
+      :code  => 404,
+      :description => "Not found",
+      :messages => ["Unable to find venue by id: #{id}"]}.to_json
+  end
 end
