@@ -15,6 +15,12 @@ module TestHelper
     }
   end
 
+  def updated_name_json
+    return {
+      "name" => "Rspec Test"
+    }
+  end
+
   def venue_with_empty_param(p)
     j = standard_venue_json
     j[p] = ""
