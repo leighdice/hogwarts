@@ -20,10 +20,10 @@ describe "Get Requests" do
         "city" => "Bristol",
         "country" => "United Kingdom",
         "county" => "",
-        "created_at" => "2016-03-12T13:11:25+00:00",
+        "created_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/,
         "name" => "Anson Rooms",
         "postcode" => "BS8 1LN",
-        "updated_at" => "2016-03-12T13:11:25+00:00"
+        "updated_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/
       })
     end
 
