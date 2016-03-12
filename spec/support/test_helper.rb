@@ -15,6 +15,22 @@ module TestHelper
     }
   end
 
+  def expected_venue_record
+    return {
+      "_id" => "56e402521338596b67000030",
+      "address_line_1" => "Richmond Building",
+      "address_line_2" => "University of Bristol Students' Union",
+      "address_line_3" => "105 Queens Rd",
+      "city" => "Bristol",
+      "country" => "United Kingdom",
+      "county" => "",
+      "created_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/,
+      "name" => "Anson Rooms",
+      "postcode" => "BS8 1LN",
+      "updated_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/
+      }
+  end
+
   def updated_name_json
     return {
       "name" => "Rspec Test"
