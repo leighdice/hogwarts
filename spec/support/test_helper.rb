@@ -22,13 +22,11 @@ module TestHelper
   end
 
   def add_pre_white_space(p)
-    s = " " + p
-    return s
+    return " " + p
   end
 
   def add_post_white_space(p)
-    s = p + " "
-    return s
+    return p + " "
   end
 
   def add_pre_and_post_white_space(p)
