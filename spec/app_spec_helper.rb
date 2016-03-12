@@ -10,6 +10,6 @@ include Rack::Test::Methods
 include TestHelper
 
 def app
-  Sinatra::Application
+  VenueApp
 end
 
