@@ -5,7 +5,7 @@ describe "Get Requests" do
 
   describe "Get by ID" do
 
-    id = "56e4157d1338598c6b000002"
+    id = "56e402521338596b67000030"
     get "/venues/#{id}"
     response = last_response
 
@@ -14,7 +14,7 @@ describe "Get Requests" do
       venue_object = jdata["records"].first
       expect(venue_object).to match(
       {
-        "_id" => "56e4157d1338598c6b000002",
+        "_id" => "56e402521338596b67000030",
         "address_line_1" => "Richmond Building",
         "address_line_2" => "University of Bristol Students' Union",
         "address_line_3" => "105 Queens Rd",
