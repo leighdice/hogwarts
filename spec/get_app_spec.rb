@@ -6,10 +6,11 @@ describe "Get Requests" do
   describe "Get by ID" do
 
     id = "56e4157d1338598c6b000002"
+    get "/venues/#{id}"
+    response = last_response
 
     it "should return venue record" do
-      get "/venues/#{id}"
-      jdata = JSON.parse(last_response.body)
+      jdata = JSON.parse(response.body)
       venue_object = jdata["records"].first
       expect(venue_object).to match(
       {
@@ -28,72 +29,71 @@ describe "Get Requests" do
     end
 
     it "should response with code 200" do
-      get "/venues/#{id}"
-      expect(last_response.status).to eql(200)
+      expect(response.status).to eql(200)
     end
 
     it "should respond with duration in header" do
-      get "/venues/#{id}"
-      expect(last_response.header["x-duration"].to_s).to match(/(\d)$/)
+      expect(response.header["x-duration"].to_s).to match(/(\d)$/)
     end
 
     it "should respond with duration in body" do
-      get "/venues/#{id}"
-      jdata = JSON.parse(last_response.body)
+      jdata = JSON.parse(response.body)
       expect(jdata["duration"]).to match(/(\d)$/)
     end
   end
 
   describe "Get invalid id" do
 
+    id = "someInvalidID"
+    get "/venues/#{id}"
+    response = last_response
+
     it "should respond with 404" do
-      get '/venues/123'
-      expect(last_response.status).to eql(404)
+      expect(response.status).to eql(404)
     end
 
     it "should return body error" do
-      get '/venues/123'
-      jdata = last_response.body
-      expect(jdata).to eql(not_found_with_id_error("123"))
+      jdata = response.body
+      expect(jdata).to eql(not_found_with_id_error(id))
     end
   end
 
   describe "Get all venues" do
 
+    get '/venues'
+    response = last_response
+
     it "should return array of venues" do
-      get '/venues'
-      jdata = JSON.parse(last_response.body)
+      jdata = JSON.parse(response.body)
       # Check for an array for now, need to be cleverer with this
       expect(jdata["records"]).to be_an_instance_of(Array) 
     end
 
     it "should respond with 200" do
-      get '/venues'
-      expect(last_response.status).to eql(200)
+      expect(response.status).to eql(200)
     end
 
     it "should respond with duration in header" do
-      get '/venues'
-      expect(last_response.header["x-duration"].to_s).to match(/(\d)$/)
+      expect(response.header["x-duration"].to_s).to match(/(\d)$/)
     end
 
     it "should respond with duration in body" do
-      get "/venues"
-      jdata = JSON.parse(last_response.body)
+      jdata = JSON.parse(response.body)
       expect(jdata["duration"]).to match(/(\d)$/)
     end
   end
 
   describe "Get invalid url" do
 
+    get '/vnue'
+    response = last_response
+
     it "should respond with status 404" do
-      get '/vnue'
-      expect(last_response.status).to eql(404)
+      expect(response.status).to eql(404)
     end
 
     it "should respond with default not found body" do
-      get '/vnue'
-      jdata = last_response.body
+      jdata = response.body
       expect(jdata).to eql({ :error => "These are not the links you're looking for",
                               :code => 404,
                               :description => "Not found",
