@@ -56,34 +56,34 @@ def generate_venue(v, a, c, id)
 end
 
 
-file = File.open("eventList.json").read
-events_dump = JSON.parse(file)
+# file = File.open("eventList.json").read
+# events_dump = JSON.parse(file)
 
-events_dump.each_with_index do |e, i|
+# events_dump.each_with_index do |e, i|
 
-  if e["cities"].count > 1
-    @exceptions.push(e["_id"])
-  elsif !e["address"].include? ","
-    @exceptions.push(e["id"])
-  else
-    cities = e["cities"].first
-    city_name = cities["name"]
+#   if e["cities"].count > 1
+#     @exceptions.push(e["_id"])
+#   elsif !e["address"].include? ","
+#     @exceptions.push(e["id"])
+#   else
+#     cities = e["cities"].first
+#     city_name = cities["name"]
 
-    venue = generate_venue(e["venue"], e["address"], city_name, e["id"])
-    unless venue.nil?
-      @venue_array.push(venue)
-    end
-  end
-end
+#     venue = generate_venue(e["venue"], e["address"], city_name, e["id"])
+#     unless venue.nil?
+#       @venue_array.push(venue)
+#     end
+#   end
+# end
 
 
 
-puts "Exception: #{@exceptions.count}"
-puts "Successful: #{@venue_array.count}"
+# puts "Exception: #{@exceptions.count}"
+# puts "Successful: #{@venue_array.count}"
 
-puts "Removing duplicates"
-@venue_array = @venue_array.uniq { |v| v[:name]}
-puts "Successful: #{@venue_array.count}"
+# puts "Removing duplicates"
+# @venue_array = @venue_array.uniq { |v| v[:name]}
+# puts "Successful: #{@venue_array.count}"
 
 # File.open("venue_list.json","w") do |f|
 #   f.write(JSON.pretty_generate(@venue_array))
@@ -91,7 +91,9 @@ puts "Successful: #{@venue_array.count}"
 
 def post_venues_to_local
   puts "Starting to post to local..."
-  @venue_array.each do |v|
+  file = File.open("test_data/venue_list.json").read
+  venues = JSON.parse(file)
+  venues.each do |v|
 
     uri = URI.parse("http://localhost:4567")
     http = Net::HTTP.new(uri.host, uri.port)
@@ -103,4 +105,4 @@ def post_venues_to_local
   end
 end
 
-#post_venues_to_local
+post_venues_to_local
