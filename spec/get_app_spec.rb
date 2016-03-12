@@ -81,10 +81,7 @@ describe "Get Requests" do
 
     it "should respond with default not found body" do
       jdata = response.body
-      expect(jdata).to eql({ :error => "These are not the links you're looking for",
-                              :code => 404,
-                              :description => "Not found",
-                              :messages => ["The url you requested is invalid"]}.to_json)
+      expect(jdata).to eql(default_invalid_url_error)
     end
   end
 end

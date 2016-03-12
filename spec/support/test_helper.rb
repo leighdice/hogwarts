@@ -79,4 +79,11 @@ module TestHelper
       :description => "Not found",
       :messages => ["Unable to find venue by id: #{id}"]}.to_json
   end
+
+  def default_invalid_url_error
+    return { :error => "These are not the links you're looking for",
+      :code => 404,
+      :description => "Not found",
+      :messages => ["The url you requested is invalid"]}.to_json
+  end
 end
