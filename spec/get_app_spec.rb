@@ -1,28 +1,30 @@
+require 'date'
 require_relative 'app_spec_helper'
 
 describe "Get Requests" do
 
   describe "Get by ID" do
 
-    id = "56e2c59861aeb62eb600002f"
+    id = "56e4157d1338598c6b000002"
 
     it "should return venue record" do
       get "/venues/#{id}"
       jdata = JSON.parse(last_response.body)
-      expect(jdata["records"]).to eql([
+      venue_object = jdata["records"].first
+      expect(venue_object).to match(
       {
-        "_id" => "56e2c59861aeb62eb600002f",
+        "_id" => "56e4157d1338598c6b000002",
         "address_line_1" => "Richmond Building",
         "address_line_2" => "University of Bristol Students' Union",
         "address_line_3" => "105 Queens Rd",
         "city" => "Bristol",
         "country" => "United Kingdom",
         "county" => "",
-        "created_at" => "2016-03-11T13:18:16+00:00",
+        "created_at" => "2016-03-12T13:11:25+00:00",
         "name" => "Anson Rooms",
         "postcode" => "BS8 1LN",
-        "updated_at" => "2016-03-11T13:18:16+00:00"
-      }])
+        "updated_at" => "2016-03-12T13:11:25+00:00"
+      })
     end
 
     it "should response with code 200" do
