@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
+
+function restoreVenueDB {
+  echo "Restoring Venue DB"
+  pushd $parent_path
+  cd ../test_data && mongorestore --host=127.0.0.1
+  popd
+}
+
+restoreVenueDB $@
