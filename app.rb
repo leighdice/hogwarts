@@ -94,7 +94,14 @@ class VenueApp < Sinatra::Base
       return error_invalid(venue)
     end
 
-    venue.save
+    # Return 500 if save fails
+    begin
+      venue.save!
+    rescue Mongoid::Errors::Callback
+      # TODO - log panic here
+      return error_500
+    end
+
     status 204
     headers["X-duration"] = request_timer_format(t)
   end
