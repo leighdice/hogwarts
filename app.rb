@@ -8,7 +8,7 @@ class VenueApp < Sinatra::Base
 
   helpers Errors, RequestTimer
 
-  configure :development do
+  configure do
     enable :logging, :dump_errors, :run, :sessions
     Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'))
     Mongoid.raise_not_found_error = false
