@@ -15,6 +15,11 @@ describe "Delete" do
     it "should respond with duration in the header" do
       expect(response.header["x-duration"].to_s).to match(/(\d)$/)
     end
+
+    it "should then be deleted" do
+      get "/venues/#{id}"
+      expect(last_response.body).to eql(not_found_with_id_error(id))
+    end
   end
 
   describe "Delete Invalid ID" do
