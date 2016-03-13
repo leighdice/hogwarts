@@ -4,3 +4,10 @@ development:
       database: venues
       hosts:
         - localhost
+
+production:
+  sessions:
+    default:
+      database: venues
+      hosts:
+        - localhost

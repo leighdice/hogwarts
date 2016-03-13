@@ -10,7 +10,7 @@ class VenueApp < Sinatra::Base
 
   configure :development do
     enable :logging, :dump_errors, :run, :sessions
-    Mongoid.load!(File.join(File.dirname(__FILE__), '/config/mongoid.yml'))
+    Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'))
     Mongoid.raise_not_found_error = false
     File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
   end
