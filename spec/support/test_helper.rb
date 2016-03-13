@@ -37,6 +37,12 @@ module TestHelper
     }
   end
 
+  def updated_invalid_name_json
+    return {
+      "name" => ""
+    }
+  end
+
   def venue_with_empty_param(p)
     j = standard_venue_json
     j[p] = ""
