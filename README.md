@@ -1,7 +1,22 @@
 # hogwarts
 
-Trying out creating a simple backend with a database connected to mongo
+Trying out creating a simple Sinatra API backend with a database connected to mongo
 
 ## Setup
 
-$ make setup
+```
+brew install mongo
+make setup
+```
+
+## Run
+
+```
+make run
+```
+
+## Test
+
+```
+rake test
+```
