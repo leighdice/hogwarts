@@ -72,7 +72,14 @@ class VenueApp < Sinatra::Base
     t = request_timer_start
     venue = Venue.new(JSON.parse(request.body.read))
     return error_invalid(venue) unless venue.valid?
-    venue.save
+    
+    # Return 500 if save fails
+    begin
+      venue.save!
+    rescue Mongoid::Errors::Callback
+      # TODO - log panic here
+      return error_500
+    end
 
     status 201
     body
