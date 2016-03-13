@@ -1,5 +1,4 @@
-require 'rspec'
-require 'rake'
+require 'rspec/core/rake_task'
 
 desc "Run the specs."
 task :test => [:import_test_data] do
