@@ -7,6 +7,7 @@ require_relative 'helpers/request-timer'
 class VenueApp < Sinatra::Base
 
   helpers Errors, RequestTimer
+  puts "I made it this far!!!!"
   Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'))
   File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
 
