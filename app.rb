@@ -22,11 +22,7 @@ class VenueApp < Sinatra::Base
 
   # set default 404 message
   error Sinatra::NotFound do
-    (status 404 ; body
-    { :error => "These are not the links you're looking for",
-      :code => 404,
-      :description => "Not found",
-      :messages => ["The url you requested is invalid"]}.to_json)
+    return error_not_found_default
   end
 
   # /version

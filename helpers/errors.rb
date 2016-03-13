@@ -1,5 +1,13 @@
 module Errors
 
+  def error_not_found_default
+    (status 404 ; body
+    { :error => "These are not the links you're looking for",
+      :code => 404,
+      :description => "Not found",
+      :messages => ["The url you requested is invalid"]}.to_json)
+  end
+
   def error_not_found(id)
 
     (status 404 ; body 
