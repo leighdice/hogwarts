@@ -104,10 +104,14 @@ class VenueApp < Sinatra::Base
   delete '/venues/:id' do
     t = request_timer_start
 
+    # Find venue by id
     venue = Venue.find(params[:id])
     return error_not_found(params[:id]) if venue.nil?
 
-    venue.delete
+    # Return 500 if failed to delete
+    return error_500 unless venue.destroy
+
+    # Return 204 if successful
     status 204
     headers["X-duration"] = request_timer_format(t)
   end
