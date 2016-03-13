@@ -17,4 +17,12 @@ module Errors
       :description => "Bad Request",
       :messages => venue.errors}.to_json)
   end
+
+  def error_500
+    (status 500 ; body
+    { :error => "Oops, something went wrong!",
+      :code => 500,
+      :description => "Something went horriby wrong!",
+      :messages => ["Oops, something went wrong!"]}.to_json)
+  end
 end
