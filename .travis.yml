@@ -11,3 +11,6 @@ before_script:
 
 script:
   - rake test
+
+notifications:
+  email: false
