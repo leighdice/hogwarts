@@ -7,12 +7,12 @@ require_relative 'helpers/request-timer'
 class VenueApp < Sinatra::Base
 
   helpers Errors, RequestTimer
+  Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'))
+  File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
 
   configure do
     enable :logging, :dump_errors, :run, :sessions
-    Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'))
-    Mongoid.raise_not_found_error = false
-    File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
+    Mongoid.raise_not_found_error = false    
   end
 
   # Set default content type to json
