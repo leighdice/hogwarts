@@ -22,7 +22,6 @@ class VenueApp < Sinatra::Base
 
   # set default 404 message
   error Sinatra::NotFound do
-    content_type :json
     (status 404 ; body
     { :error => "These are not the links you're looking for",
       :code => 404,
