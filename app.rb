@@ -22,7 +22,6 @@ class VenueApp < Sinatra::Base
 
   # set default 404 message
   error Sinatra::NotFound do
-    content_type :json
     (status 404 ; body
     { :error => "These are not the links you're looking for",
       :code => 404,
@@ -72,7 +71,14 @@ class VenueApp < Sinatra::Base
     t = request_timer_start
     venue = Venue.new(JSON.parse(request.body.read))
     return error_invalid(venue) unless venue.valid?
-    venue.save
+    
+    # Return 500 if save fails
+    begin
+      venue.save!
+    rescue Mongoid::Errors::Callback
+      # TODO - log panic here
+      return error_500
+    end
 
     status 201
     body
@@ -94,7 +100,14 @@ class VenueApp < Sinatra::Base
       return error_invalid(venue)
     end
 
-    venue.save
+    # Return 500 if save fails
+    begin
+      venue.save!
+    rescue Mongoid::Errors::Callback
+      # TODO - log panic here
+      return error_500
+    end
+
     status 204
     headers["X-duration"] = request_timer_format(t)
   end
@@ -104,10 +117,14 @@ class VenueApp < Sinatra::Base
   delete '/venues/:id' do
     t = request_timer_start
 
+    # Find venue by id
     venue = Venue.find(params[:id])
     return error_not_found(params[:id]) if venue.nil?
 
-    venue.delete
+    # Return 500 if failed to delete
+    return error_500 unless venue.destroy
+
+    # Return 204 if successful
     status 204
     headers["X-duration"] = request_timer_format(t)
   end
