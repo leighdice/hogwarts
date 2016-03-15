@@ -16,8 +16,8 @@ class VenueApp < Sinatra::Base
     enable :logging, :dump_errors, :run, :sessions
     Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'), :development)
     Mongoid.raise_not_found_error = false
-    $redis = Redis.new()
-    $DEFAULT_REDIS_EX = 300
+    $redis = Redis.new
+    $DEFAULT_REDIS_EX = 10
   end
 
   # Set default content type to json
@@ -60,10 +60,9 @@ class VenueApp < Sinatra::Base
       venue = JSON.parse($redis.get(params[:id]))
     else
       venue = Venue.find(params[:id])
+      return error_not_found(params[:id]) if venue.nil?
       $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
     end
-
-    return error_not_found(params[:id]) if venue.nil?
 
     status 200
     headers["X-duration"] = request_timer_format(t)
@@ -82,6 +81,7 @@ class VenueApp < Sinatra::Base
     # Return 500 if save fails
     begin
       venue.save!
+      $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
     rescue Mongoid::Errors::Callback
       # TODO - log panic here
       return error_500
@@ -97,13 +97,26 @@ class VenueApp < Sinatra::Base
   put '/venues/:id' do
     t = request_timer_start
 
-    venue = Venue.find(params[:id])
+    if $redis.exists(params[:id])
+      puts "redis does exist for #{params[:id]}"
+      venue = JSON.parse($redis.get(params[:id]))
+      puts "redis parsed == #{venue.inspect}"
+    else
+      venue = Venue.find(params[:id])
+      puts "#{Time.now.utc.to_i} non redis venue == #{venue.inspect}"
+      return error_not_found(params[:id]) if venue.nil?
+    end
+
     jdata = JSON.parse(request.body.read)
-    return error_not_found(params[:id]) if venue.nil?
+    puts "jdata = #{jdata.inspect}"
 
     begin
+      puts "venue pre #{venue.inspect}"
       venue.update_attributes!(jdata)
-    rescue Mongoid::Errors::Validations
+      puts "venue post #{venue.inspect}"
+      $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
+    rescue Mongoid::Errors::Validations => e
+      puts "failing because: #{e}"
       return error_invalid(venue)
     end
 
@@ -112,7 +125,7 @@ class VenueApp < Sinatra::Base
       venue.save!
     rescue Mongoid::Errors::Callback
       # TODO - log panic here
-      return error_500
+      return "oops!"
     end
 
     status 204
