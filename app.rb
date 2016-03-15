@@ -23,7 +23,7 @@ class VenueApp < Sinatra::Base
     begin
       $redis.ping
     rescue Exception => e
-      fail("e.message")
+      fail(e.message)
     end
   end
 
