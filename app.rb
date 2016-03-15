@@ -9,6 +9,8 @@ class VenueApp < Sinatra::Base
 
   helpers Errors, RequestTimer
   File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
+  set :show_exceptions, false
+  set :raise_errors, false
 
   configure :development do
     enable :logging, :dump_errors, :run, :sessions
