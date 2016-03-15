@@ -70,9 +70,12 @@ class VenueApp < Sinatra::Base
     # Attempt to fetch from redis
     # If key does not exist, fetch from db and create new key
     if $redis.exists(params[:id])
-      venue = JSON.parse($redis.get(params[:id]))
+      # try pretty generate
+      venue = $redis.get(params[:id])
+      puts "from redis: #{venue.inspect}"
     else
       venue = Venue.find(params[:id])
+      puts "from db: #{venue.inspect}"
       return error_not_found(params[:id]) if venue.nil?
       $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
     end
