@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'mongoid'
+require 'redis'
 require_relative 'models/venue'
 require_relative 'helpers/errors'
 require_relative 'helpers/request-timer'
@@ -12,7 +13,9 @@ class VenueApp < Sinatra::Base
   configure :development do
     enable :logging, :dump_errors, :run, :sessions
     Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'), :development)
-    Mongoid.raise_not_found_error = false    
+    Mongoid.raise_not_found_error = false
+    $redis = Redis.new()
+    $DEFAULT_REDIS_EX = 300
   end
 
   # Set default content type to json
@@ -50,7 +53,13 @@ class VenueApp < Sinatra::Base
   # get venue by id
   get '/venues/:id' do
     t = request_timer_start
-    venue = Venue.find(params[:id])
+      
+    if $redis.exists(params[:id])
+      venue = JSON.parse($redis.get(params[:id]))
+    else
+      venue = Venue.find(params[:id])
+      $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
+    end
 
     return error_not_found(params[:id]) if venue.nil?
 
@@ -58,7 +67,7 @@ class VenueApp < Sinatra::Base
     headers["X-duration"] = request_timer_format(t)
     body
       { :duration => request_timer_format(t),
-        :records  => venue.to_a}.to_json
+        :records  => [venue]}.to_json
   end
 
   # /venues
@@ -119,6 +128,7 @@ class VenueApp < Sinatra::Base
 
     # Return 500 if failed to delete
     return error_500 unless venue.destroy
+    $redis.del(params[:id])
 
     # Return 204 if successful
     status 204
