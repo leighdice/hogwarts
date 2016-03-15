@@ -10,7 +10,7 @@ class VenueApp < Sinatra::Base
   helpers Errors, RequestTimer
   File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
   set :show_exceptions, false
-  set :raise_errors, false
+  set :raise_errors, true
 
   configure :development do
     enable :logging, :dump_errors, :run, :sessions
@@ -28,6 +28,10 @@ class VenueApp < Sinatra::Base
   # set default 404 message
   error Sinatra::NotFound do
     return error_not_found_default
+  end
+
+  error do
+    return error_500_with_message
   end
 
   # /version

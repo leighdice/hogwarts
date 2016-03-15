@@ -33,4 +33,12 @@ module Errors
       :description => "Something went horriby wrong!",
       :messages => ["Oops, something went wrong!"]}.to_json)
   end
+
+  def error_500_with_message
+    (status 500 ; body
+    { :error => "Oops, something went wrong!",
+      :code => 500,
+      :description => "Something went horriby wrong!",
+      :messages => env['sinatra.error'].message}.to_json)
+  end
 end
