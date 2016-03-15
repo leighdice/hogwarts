@@ -10,7 +10,6 @@ class VenueApp < Sinatra::Base
   helpers Errors, RequestTimer
   File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
   set :show_exceptions, false
-  #set :raise_errors, false
 
   configure :development do
     enable :logging, :dump_errors, :run, :sessions
@@ -37,6 +36,7 @@ class VenueApp < Sinatra::Base
     return error_not_found_default
   end
 
+  # Overide default 500
   error 500 do
     return error_500
   end
@@ -66,7 +66,9 @@ class VenueApp < Sinatra::Base
   # get venue by id
   get '/venues/:id' do
     t = request_timer_start
-      
+
+    # Attempt to fetch from redis
+    # If key does not exist, fetch from db and create new key
     if $redis.exists(params[:id])
       venue = JSON.parse($redis.get(params[:id]))
     else
@@ -86,10 +88,13 @@ class VenueApp < Sinatra::Base
   # post new venue
   post '/venues/new' do
     t = request_timer_start
+
+    # Create new venue from body
+    # Return invalid if it doesnt pass validation
     venue = Venue.new(JSON.parse(request.body.read))
     return error_invalid(venue) unless venue.valid?
-    
-    # Return 500 if save fails
+
+    # Save and add to redis, throw 500 if error
     begin
       venue.save!
       $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
@@ -108,13 +113,13 @@ class VenueApp < Sinatra::Base
   put '/venues/:id' do
     t = request_timer_start
 
+    # Fetch venue by id
     venue = Venue.find(params[:id])
     return error_not_found(params[:id]) if venue.nil?
 
-    jdata = JSON.parse(request.body.read)
-
+    # Update attributes & add to redis
     begin
-      venue.update_attributes!(jdata)
+      venue.update_attributes!(JSON.parse(request.body.read))
       $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
     rescue Mongoid::Errors::Validations
       # TODO - log errors
@@ -144,6 +149,8 @@ class VenueApp < Sinatra::Base
 
     # Return 500 if failed to delete
     return error_500 unless venue.destroy
+
+    # Remove from redis
     $redis.del(params[:id])
 
     # Return 204 if successful
