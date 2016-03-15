@@ -97,26 +97,16 @@ class VenueApp < Sinatra::Base
   put '/venues/:id' do
     t = request_timer_start
 
-    if $redis.exists(params[:id])
-      puts "redis does exist for #{params[:id]}"
-      venue = JSON.parse($redis.get(params[:id]))
-      puts "redis parsed == #{venue.inspect}"
-    else
-      venue = Venue.find(params[:id])
-      puts "#{Time.now.utc.to_i} non redis venue == #{venue.inspect}"
-      return error_not_found(params[:id]) if venue.nil?
-    end
+    venue = Venue.find(params[:id])
+    return error_not_found(params[:id]) if venue.nil?
 
     jdata = JSON.parse(request.body.read)
-    puts "jdata = #{jdata.inspect}"
 
     begin
-      puts "venue pre #{venue.inspect}"
       venue.update_attributes!(jdata)
-      puts "venue post #{venue.inspect}"
       $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
-    rescue Mongoid::Errors::Validations => e
-      puts "failing because: #{e}"
+    rescue Mongoid::Errors::Validations
+      # TODO - log errors
       return error_invalid(venue)
     end
 
@@ -125,7 +115,7 @@ class VenueApp < Sinatra::Base
       venue.save!
     rescue Mongoid::Errors::Callback
       # TODO - log panic here
-      return "oops!"
+      return error_500
     end
 
     status 204
