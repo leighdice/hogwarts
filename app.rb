@@ -17,7 +17,7 @@ class VenueApp < Sinatra::Base
     Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'), :development)
     Mongoid.raise_not_found_error = false
     $redis = Redis.new
-    $DEFAULT_REDIS_EX = 10
+    $DEFAULT_REDIS_EX = 300
   end
 
   # Set default content type to json
