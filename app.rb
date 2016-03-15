@@ -10,7 +10,7 @@ class VenueApp < Sinatra::Base
   helpers Errors, RequestTimer
   File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
   set :show_exceptions, false
-  set :raise_errors, false
+  #set :raise_errors, false
 
   configure :development do
     enable :logging, :dump_errors, :run, :sessions
@@ -18,6 +18,11 @@ class VenueApp < Sinatra::Base
     Mongoid.raise_not_found_error = false
     $redis = Redis.new
     $DEFAULT_REDIS_EX = 300
+
+    # Check redis connection before starting
+    unless $redis.connected?
+      fail("Failed to connect to redis!")
+    end
   end
 
   # Set default content type to json
@@ -28,6 +33,10 @@ class VenueApp < Sinatra::Base
   # set default 404 message
   error Sinatra::NotFound do
     return error_not_found_default
+  end
+
+  error 500 do
+    return error_500
   end
 
   # /version
