@@ -16,7 +16,6 @@ class VenueApp < Sinatra::Base
     Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'), :development)
     Mongoid.raise_not_found_error = false
     $redis = Redis.new(:host => ENV['REDIS_URL'] || "127.0.0.1", :port => ENV['REDIS_PORT'] || 6379)
-    $DEFAULT_REDIS_EX = 10
 
     # Ping redis to check connection
     begin
