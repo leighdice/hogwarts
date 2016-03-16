@@ -66,11 +66,11 @@ module TestHelper
   # Headers
 
   def standard_header
-
+    return { "CONTENT_TYPE" => "application/json" }
   end
-  
-  def no_redis_header
 
+  def no_redis_header
+    { "CONTENT_TYPE" => "application/json", "X_NO_REDIS" => true }
   end
 
   # Error Responses

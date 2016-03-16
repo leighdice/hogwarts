@@ -5,7 +5,7 @@ describe "Put Request" do
 
   describe "Invalid ID" do
 
-    put('/venues/someInvalidID', updated_name_json.to_json, { "CONTENT_TYPE" => "application/json" })
+    put('/venues/someInvalidID', updated_name_json.to_json, standard_header)
     response = last_response
 
     it "should respond with status 404" do
@@ -19,7 +19,7 @@ describe "Put Request" do
 
   describe "Invalid Paramater" do
 
-    put('/venues/56e40252133859f813000027', updated_invalid_name_json.to_json, { "CONTENT_TYPE" => "application/json" })
+    put('/venues/56e40252133859f813000027', updated_invalid_name_json.to_json, standard_header)
     response = last_response
 
     it "should respond with status 400" do
@@ -38,7 +38,7 @@ describe "Put Request" do
     old_updated_at_string = old_response_body["records"].first["updated_at"]
     old_updated_at = Time.at(Time.parse(old_updated_at_string))
 
-    put('/venues/56e40252133859f813000027', updated_name_json.to_json, { "CONTENT_TYPE" => "application/json" })
+    put('/venues/56e40252133859f813000027', updated_name_json.to_json, standard_header)
     response = last_response
 
     it "should update paramater updated_at" do
