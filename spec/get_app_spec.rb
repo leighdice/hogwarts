@@ -5,7 +5,8 @@ describe "Get Requests" do
 
   describe "Get by ID" do
 
-    id = "56e402521338596b67000030"
+    #id = "56e402521338596b67000030"
+    id = "testTravisFails"
     get "/venues/#{id}"
     response = last_response
 
