@@ -63,6 +63,16 @@ module TestHelper
     return s
   end
 
+  # Headers
+
+  def standard_header
+
+  end
+  
+  def no_redis_header
+
+  end
+
   # Error Responses
 
   def empty_param_error(p)
