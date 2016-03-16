@@ -36,6 +36,10 @@ module RedisHelper
     $redis.hset("venues", id, venue.to_json)
   end
 
+  def del_from_redis(id)
+    $redis.hdel("venues", params[:id])
+  end
+
   def can_use_redis?(request)
     if request.env["HTTP_X_NO_REDIS"] || ENV['USE_REDIS'] == false
       return false
