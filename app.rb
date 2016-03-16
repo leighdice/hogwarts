@@ -57,10 +57,8 @@ class VenueApp < Sinatra::Base
     t = request_timer_start
 
     if request.env["HTTP_X_NO_REDIS"] || ENV['USE_REDIS'] == false
-      puts "REDIS FREE request"
       venues = Venue.all
     else
-      puts "not so redis free request"
       venues = get_all_from_redis
     end
 
@@ -76,16 +74,8 @@ class VenueApp < Sinatra::Base
   get '/venues/:id' do
     t = request_timer_start
 
-    # Attempt to fetch from redis
-    # If key does not exist, fetch from db and create new key
-
-    if $redis.hexists("venues", params[:id])
-      venue = JSON.parse($redis.hget("venues", params[:id]))
-    else
-      venue = Venue.find(params[:id])
-      return error_not_found(params[:id]) if venue.nil?
-      $redis.hset("venues", params[:id], venue.to_json)
-    end
+    venue = get_from_redis(params[:id])
+    return error_not_found(params[:id]) if venue.nil?
 
     status 200
     headers["X-duration"] = request_timer_format(t)
