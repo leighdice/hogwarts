@@ -57,11 +57,12 @@ class VenueApp < Sinatra::Base
     t = request_timer_start
 
     if $redis.exists("all_venues")
-      venues = $redis.smembers("all_venues")
-      puts venues.inspect
+      renues = $redis.smembers("all_venues")
+      venues = []
+      renues.each {|r| venues.push(JSON.parse(r))}
     else
       venues = Venue.all
-      $redis.sadd("all_venues", venues.as_json)
+      $redis.sadd("all_venues", venues.to_json)
     end  
     
     status 200
