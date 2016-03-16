@@ -5,6 +5,7 @@ rvm:
 
 services:
   - mongodb
+  - redis
 
 before_script:
   - make setup
