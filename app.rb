@@ -57,9 +57,16 @@ class VenueApp < Sinatra::Base
     t = request_timer_start
 
     if $redis.exists("venues")
-      redis_response = $redis.hgetall("venues")
-      venues = []
-      redis_response.values.each {|r| venues.push(JSON.parse(r))}
+
+      # Check if redis count matches mongo
+      if $redis.hlen("venues") < Venue.count
+        venues = Venue.all
+        venues.each {|v| $redis.hset("venues", v.id, v.to_json)}
+      else
+        redis_response = $redis.hgetall("venues")
+        venues = []
+        redis_response.values.each {|r| venues.push(JSON.parse(r))}
+      end
     else
       venues = Venue.all
       venues.each {|v| $redis.hset("venues", v.id, v.to_json)}
