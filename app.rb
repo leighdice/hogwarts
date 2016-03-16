@@ -16,7 +16,7 @@ class VenueApp < Sinatra::Base
     Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'), :development)
     Mongoid.raise_not_found_error = false
     $redis = Redis.new(:host => ENV['REDIS_URL'] || "127.0.0.1", :port => ENV['REDIS_PORT'] || 6379)
-    $DEFAULT_REDIS_EX = 300
+    $DEFAULT_REDIS_EX = 10
 
     # Ping redis to check connection
     begin
@@ -55,11 +55,20 @@ class VenueApp < Sinatra::Base
   # get all venues
   get '/venues' do
     t = request_timer_start
+
+    if $redis.exists("all_venues")
+      venues = $redis.smembers("all_venues")
+      puts venues.inspect
+    else
+      venues = Venue.all
+      $redis.sadd("all_venues", venues.as_json)
+    end  
+    
     status 200
     headers["X-duration"] = request_timer_format(t)
     body
       { :duration => request_timer_format(t),
-        :records  => Venue.all}.to_json
+        :records  => venues}.to_json
   end
 
   # /venues/:id
