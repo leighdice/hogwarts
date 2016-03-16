@@ -15,7 +15,7 @@ class VenueApp < Sinatra::Base
     enable :logging, :dump_errors, :run, :sessions
     Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'), :development)
     Mongoid.raise_not_found_error = false
-    $redis = Redis.new(:host => "127.0.0.1", :port => 6379)
+    $redis = Redis.new(:host => ENV['REDIS_URL'] || "127.0.0.1", :port => ENV['REDIS_PORT'] || 6379)
     $DEFAULT_REDIS_EX = 300
 
     # Ping redis to check connection
@@ -70,12 +70,9 @@ class VenueApp < Sinatra::Base
     # Attempt to fetch from redis
     # If key does not exist, fetch from db and create new key
     if $redis.exists(params[:id])
-      # try pretty generate
-      venue = $redis.get(params[:id])
-      puts "from redis: #{venue.inspect}"
+      venue = JSON.parse($redis.get(params[:id]))
     else
       venue = Venue.find(params[:id])
-      puts "from db: #{venue.inspect}"
       return error_not_found(params[:id]) if venue.nil?
       $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
     end
