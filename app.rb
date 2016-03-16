@@ -4,10 +4,11 @@ require 'redis'
 require_relative 'models/venue'
 require_relative 'helpers/errors'
 require_relative 'helpers/request-timer'
+require_relative 'helpers/redis-helper'
 
 class VenueApp < Sinatra::Base
 
-  helpers Errors, RequestTimer
+  helpers Errors, RequestTimer, RedisHelper
   File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
   set :show_exceptions, false
 
@@ -55,20 +56,12 @@ class VenueApp < Sinatra::Base
   get '/venues' do
     t = request_timer_start
 
-    if $redis.exists("venues")
-
-      # Check if redis count matches mongo
-      if $redis.hlen("venues") < Venue.count
-        venues = Venue.all
-        venues.each {|v| $redis.hset("venues", v.id, v.to_json)}
-      else
-        redis_response = $redis.hgetall("venues")
-        venues = []
-        redis_response.values.each {|r| venues.push(JSON.parse(r))}
-      end
-    else
+    if request.env["HTTP_X_NO_REDIS"] || ENV['USE_REDIS'] == false
+      puts "REDIS FREE request"
       venues = Venue.all
-      venues.each {|v| $redis.hset("venues", v.id, v.to_json)}
+    else
+      puts "not so redis free request"
+      venues = get_all_from_redis
     end
 
     status 200
