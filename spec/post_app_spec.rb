@@ -5,7 +5,7 @@ describe "Post Requests" do
   describe "Post - new venue" do
 
     venue = standard_venue_json
-    post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+    post('/venues/new', venue.to_json, standard_header)
     response = last_response
 
     it "should respond with status 201" do
