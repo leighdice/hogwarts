@@ -2,19 +2,15 @@ module RedisHelper
 
   def get_all_from_redis
     if $redis.exists("venues")
-      puts "yes redis exists"
       if $redis.hlen("venues") < Venue.count
-        puts "yes the count is too low, lets update"
         venues = Venue.all
         add_all_to_redis(venues)
       else
-        puts "counts fine, lets parse it"
         redis_response = $redis.hgetall("venues")
         venues = []
         redis_response.values.each {|r| venues.push(JSON.parse(r))}
       end
     else
-      puts "redis does not exist, lets create it"
       venues = Venue.all
       add_all_to_redis(venues)
     end
@@ -38,5 +34,13 @@ module RedisHelper
 
   def add_to_redis(id, venue)
     $redis.hset("venues", id, venue.to_json)
+  end
+
+  def can_use_redis?(request)
+    if request.env["HTTP_X_NO_REDIS"] || ENV['USE_REDIS'] == false
+      return false
+    else
+      return true
+    end
   end
 end
