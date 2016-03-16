@@ -62,7 +62,7 @@ class VenueApp < Sinatra::Base
       renues.each {|r| venues.push(JSON.parse(r))}
     else
       venues = Venue.all
-      $redis.sadd("all_venues", venues.to_json)
+      $redis.sadd("all_venues", venues.to_json, {:ex => $DEFAULT_REDIS_EX})
     end  
     
     status 200
