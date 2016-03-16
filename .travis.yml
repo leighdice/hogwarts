@@ -1,7 +1,7 @@
 language: ruby
 
 rvm:
-  2.2.0
+  2.2.1
 
 services:
   - mongodb
@@ -11,7 +11,7 @@ before_script:
   - make setup
 
 script:
-  - rake test
+  - bundle exec rake test
 
 notifications:
   email: false
