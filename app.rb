@@ -56,15 +56,15 @@ class VenueApp < Sinatra::Base
   get '/venues' do
     t = request_timer_start
 
-    if $redis.exists("all_venues")
-      renues = $redis.smembers("all_venues")
+    if $redis.exists("venues")
+      redis_response = $redis.hgetall("venues")
       venues = []
-      renues.each {|r| venues.push(JSON.parse(r))}
+      redis_response.values.each {|r| venues.push(JSON.parse(r))}
     else
       venues = Venue.all
-      $redis.sadd("all_venues", venues.to_json, {:ex => $DEFAULT_REDIS_EX})
-    end  
-    
+      venues.each {|v| $redis.hset("venues", v.id, v.to_json)}
+    end
+
     status 200
     headers["X-duration"] = request_timer_format(t)
     body
@@ -79,12 +79,13 @@ class VenueApp < Sinatra::Base
 
     # Attempt to fetch from redis
     # If key does not exist, fetch from db and create new key
-    if $redis.exists(params[:id])
-      venue = JSON.parse($redis.get(params[:id]))
+
+    if $redis.hexists("venues", params[:id])
+      venue = JSON.parse($redis.hget("venues", params[:id]))
     else
       venue = Venue.find(params[:id])
       return error_not_found(params[:id]) if venue.nil?
-      $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
+      $redis.hset("venues", params[:id], venue.to_json)
     end
 
     status 200
@@ -107,7 +108,7 @@ class VenueApp < Sinatra::Base
     # Save and add to redis, throw 500 if error
     begin
       venue.save!
-      $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
+      $redis.hset("venues", venue.id, venue.to_json)
     rescue Mongoid::Errors::Callback
       # TODO - log panic here
       return error_500
@@ -130,7 +131,7 @@ class VenueApp < Sinatra::Base
     # Update attributes & add to redis
     begin
       venue.update_attributes!(JSON.parse(request.body.read))
-      $redis.set(params[:id], venue.to_json, {:ex => $DEFAULT_REDIS_EX})
+      $redis.hset("venues", venue.id, venue.to_json)
     rescue Mongoid::Errors::Validations
       # TODO - log errors
       return error_invalid(venue)
@@ -161,7 +162,7 @@ class VenueApp < Sinatra::Base
     return error_500 unless venue.destroy
 
     # Remove from redis
-    $redis.del(params[:id])
+    $redis.hdel("venues", params[:id])
 
     # Return 204 if successful
     status 204
