@@ -31,22 +31,6 @@ module TestHelper
       }
   end
 
-  def expected_no_redis_venue_record
-    return {
-      "_id" => "56e9ecd8b9fcc9f549a1981a",
-      "address_line_1" => "Millbay Rd",
-      "address_line_2" => "",
-      "address_line_3" => "",
-      "city" => "Plymouth",
-      "country" => "United Kingdom",
-      "county" => "",
-      "created_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/,
-      "name" => "Plymouth Pavillions",
-      "postcode" => "PL1 3LF",
-      "updated_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/
-      }
-  end
-
   def updated_name_json
     return {
       "name" => "Rspec Test"
@@ -56,6 +40,12 @@ module TestHelper
   def updated_invalid_name_json
     return {
       "name" => ""
+    }
+  end
+
+  def no_redis_body
+    return {
+      "address_line_1" => "62 Shoreditch High Street"
     }
   end
 
@@ -86,7 +76,7 @@ module TestHelper
   end
 
   def no_redis_header
-    { "CONTENT_TYPE" => "application/json", "X_NO_REDIS" => true }
+    { "CONTENT_TYPE" => "application/json", "HTTP_X_NO_REDIS" => true }
   end
 
   # Error Responses

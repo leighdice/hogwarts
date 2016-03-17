@@ -74,7 +74,12 @@ class VenueApp < Sinatra::Base
   get '/venues/:id' do
     t = request_timer_start
 
-    venue = get_from_redis(params[:id])
+    if can_use_redis?(request)
+      venue = get_from_redis(params[:id])
+    else
+      venue = Venue.find(params[:id])
+    end
+
     return error_not_found(params[:id]) if venue.nil?
 
     status 200

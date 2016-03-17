@@ -2,32 +2,23 @@ require_relative 'app_spec_helper'
 
 describe "Redis" do
 
-  describe "x-no-redis header" do
+  describe "put with x-no-redis header" do
 
-    # First run script to add venue directly to mongo
-    system("mongo venues < #{File.join(File.dirname(__FILE__), '../scripts/new_venue_fixture.js')}")
+    id = "56e4025213385969f9000008"
+    put("/venues/#{id}", no_redis_body.to_json, no_redis_header)
 
-    id = "56e9ecd8b9fcc9f549a1981a"
-    get("/venues/#{id}", no_redis_header)
-    response = last_response
+    it "should not update when i get normally" do
+      get "/venues/#{id}"
+      updated_param_body = JSON.parse(last_response.body)
 
-    it "should return venue record" do
-      jdata = JSON.parse(response.body)
-      venue_object = jdata["records"].first
-      expect(venue_object).to match(expected_no_redis_venue_record)
+      expect(updated_param_body["records"].first["address_line_1"]).to eql("1 James St")
     end
 
-    it "should response with code 200" do
-      expect(response.status).to eql(200)
-    end
+    it "should update when i get with no redis header" do
+      get("/venues/#{id}", nil, {"HTTP_X_NO_REDIS" => true})
+      updated_param_body = JSON.parse(last_response.body)
 
-    it "should respond with duration in header" do
-      expect(response.header["x-duration"].to_s).to match(/(\d)$/)
-    end
-
-    it "should respond with duration in body" do
-      jdata = JSON.parse(response.body)
-      expect(jdata["duration"]).to match(/(\d)$/)
+      expect(updated_param_body["records"].first["address_line_1"]).to eql("62 Shoreditch High Street")
     end
   end
 end
