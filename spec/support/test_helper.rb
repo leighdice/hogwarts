@@ -34,8 +34,8 @@ module TestHelper
   def expected_no_redis_venue_record
     return {
       "_id" => "56e9ecd8b9fcc9f549a1981a",
-      "address_line_1" => "Plymouth Pavillions",
-      "address_line_2" => "Millbay Rd",
+      "address_line_1" => "Millbay Rd",
+      "address_line_2" => "",
       "address_line_3" => "",
       "city" => "Plymouth",
       "country" => "United Kingdom",

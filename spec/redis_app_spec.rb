@@ -4,14 +4,17 @@ describe "Redis" do
 
   describe "x-no-redis header" do
 
-    id = "56e402521338596b67000030"
+    # First run script to add venue directly to mongo
+    system("mongo venues < #{File.join(File.dirname(__FILE__), '../scripts/new_venue_fixture.js')}")
+
+    id = "56e9ecd8b9fcc9f549a1981a"
     get("/venues/#{id}", no_redis_header)
     response = last_response
 
     it "should return venue record" do
       jdata = JSON.parse(response.body)
       venue_object = jdata["records"].first
-      expect(venue_object).to match(expected_venue_record)
+      expect(venue_object).to match(expected_no_redis_venue_record)
     end
 
     it "should response with code 200" do
