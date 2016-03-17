@@ -15,7 +15,7 @@ describe "Redis" do
     end
 
     it "should update when i get with no redis header" do
-      get("/venues/#{id}", nil, {"HTTP_X_NO_REDIS" => true})
+      get("/venues/#{id}", nil, no_redis_header)
       updated_param_body = JSON.parse(last_response.body)
 
       expect(updated_param_body["records"].first["address_line_1"]).to eql("62 Shoreditch High Street")
