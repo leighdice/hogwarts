@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'mongoid'
 require 'redis'
+require 'logger'
 require_relative 'models/venue'
 require_relative 'helpers/errors'
 require_relative 'helpers/request-timer'
@@ -11,6 +12,12 @@ class VenueApp < Sinatra::Base
   helpers Errors, RequestTimer, RedisHelper
   File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
   set :show_exceptions, false
+
+  configure do
+    $logfile = File.open('venues.log', File::WRONLY | File::APPEND | File::CREAT)
+    $logfile.sync = true
+    $logger = Logger.new($logfile)
+  end
 
   configure :development do
     enable :logging, :dump_errors, :run, :sessions
@@ -103,8 +110,8 @@ class VenueApp < Sinatra::Base
     begin
       venue.save!
       add_to_redis(venue.id, venue) if can_use_redis?(request)
-    rescue Mongoid::Errors::Callback
-      # TODO - log panic here
+    rescue Mongoid::Errors::Callback => e
+      $logger.error(e.problem)
       return error_500
     end
 
@@ -126,16 +133,15 @@ class VenueApp < Sinatra::Base
     begin
       venue.update_attributes!(JSON.parse(request.body.read))
       add_to_redis(venue.id, venue) if can_use_redis?(request)
-    rescue Mongoid::Errors::Validations
-      # TODO - log errors
+    rescue Mongoid::Errors::Validations => e
       return error_invalid(venue)
     end
 
     # Return 500 if save fails
     begin
       venue.save!
-    rescue Mongoid::Errors::Callback
-      # TODO - log panic here
+    rescue Mongoid::Errors::Callback => e
+      $logger.error(e.problem)
       return error_500
     end
 
@@ -153,7 +159,12 @@ class VenueApp < Sinatra::Base
     return error_not_found(params[:id]) if venue.nil?
 
     # Return 500 if failed to delete
-    return error_500 unless venue.destroy
+    begin
+      venue.destroy
+    rescue Exception => e
+      $logger.error(e)
+      return error_500
+    end
 
     # Remove from redis
     del_from_redis(params[:id]) if can_use_redis?(request)
