@@ -8,7 +8,7 @@ describe "Validation" do
 
       venue = standard_venue_json
       venue["name"] = add_pre_white_space(venue["name"])
-      post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+      post('/venues/new', venue.to_json, standard_header)
       response = last_response
 
       it "should respond with the status 400" do
@@ -24,7 +24,7 @@ describe "Validation" do
 
       venue = standard_venue_json
       venue["name"] = add_post_white_space(venue["name"])
-      post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+      post('/venues/new', venue.to_json, standard_header)
       response = last_response
 
       it "should respond with the status 400" do
@@ -40,7 +40,7 @@ describe "Validation" do
 
       venue = standard_venue_json
       venue["name"] = add_pre_and_post_white_space(venue["name"])
-      post('/venues/new', venue.to_json, { "CONTENT_TYPE" => "application/json" })
+      post('/venues/new', venue.to_json, standard_header)
       response = last_response
 
       it "should respond with the status 400" do

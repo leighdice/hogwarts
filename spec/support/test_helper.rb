@@ -43,6 +43,12 @@ module TestHelper
     }
   end
 
+  def no_redis_body
+    return {
+      "address_line_1" => "62 Shoreditch High Street"
+    }
+  end
+
   def venue_with_empty_param(p)
     j = standard_venue_json
     j[p] = ""
@@ -61,6 +67,16 @@ module TestHelper
     s = add_pre_white_space(p)
     s = add_post_white_space(s)
     return s
+  end
+
+  # Headers
+
+  def standard_header
+    return { "CONTENT_TYPE" => "application/json" }
+  end
+
+  def no_redis_header
+    { "CONTENT_TYPE" => "application/json", "HTTP_X_NO_REDIS" => true }
   end
 
   # Error Responses

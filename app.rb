@@ -5,10 +5,11 @@ require 'logger'
 require_relative 'models/venue'
 require_relative 'helpers/errors'
 require_relative 'helpers/request-timer'
+require_relative 'helpers/redis-helper'
 
 class VenueApp < Sinatra::Base
 
-  helpers Errors, RequestTimer
+  helpers Errors, RequestTimer, RedisHelper
   File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
   set :show_exceptions, false
 
@@ -62,20 +63,10 @@ class VenueApp < Sinatra::Base
   get '/venues' do
     t = request_timer_start
 
-    if $redis.exists("venues")
-
-      # Check if redis count matches mongo
-      if $redis.hlen("venues") < Venue.count
-        venues = Venue.all
-        venues.each {|v| $redis.hset("venues", v.id, v.to_json)}
-      else
-        redis_response = $redis.hgetall("venues")
-        venues = []
-        redis_response.values.each {|r| venues.push(JSON.parse(r))}
-      end
+    if can_use_redis?(request)
+      venues = get_all_from_redis
     else
       venues = Venue.all
-      venues.each {|v| $redis.hset("venues", v.id, v.to_json)}
     end
 
     status 200
@@ -90,16 +81,13 @@ class VenueApp < Sinatra::Base
   get '/venues/:id' do
     t = request_timer_start
 
-    # Attempt to fetch from redis
-    # If key does not exist, fetch from db and create new key
-
-    if $redis.hexists("venues", params[:id])
-      venue = JSON.parse($redis.hget("venues", params[:id]))
+    if can_use_redis?(request)
+      venue = get_from_redis(params[:id])
     else
       venue = Venue.find(params[:id])
-      return error_not_found(params[:id]) if venue.nil?
-      $redis.hset("venues", params[:id], venue.to_json)
     end
+
+    return error_not_found(params[:id]) if venue.nil?
 
     status 200
     headers["X-duration"] = request_timer_format(t)
@@ -121,7 +109,7 @@ class VenueApp < Sinatra::Base
     # Save and add to redis, throw 500 if error
     begin
       venue.save!
-      $redis.hset("venues", venue.id, venue.to_json)
+      add_to_redis(venue.id, venue) if can_use_redis?(request)
     rescue Mongoid::Errors::Callback => e
       $logger.error(e.problem)
       return error_500
@@ -144,7 +132,7 @@ class VenueApp < Sinatra::Base
     # Update attributes & add to redis
     begin
       venue.update_attributes!(JSON.parse(request.body.read))
-      $redis.hset("venues", venue.id, venue.to_json)
+      add_to_redis(venue.id, venue) if can_use_redis?(request)
     rescue Mongoid::Errors::Validations => e
       return error_invalid(venue)
     end
@@ -179,7 +167,7 @@ class VenueApp < Sinatra::Base
     end
 
     # Remove from redis
-    $redis.hdel("venues", params[:id])
+    del_from_redis(params[:id]) if can_use_redis?(request)
 
     # Return 204 if successful
     status 204
