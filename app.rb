@@ -2,6 +2,7 @@ require 'sinatra'
 require 'mongoid'
 require 'redis'
 require 'logger'
+require 'mongoid_search'
 require_relative 'models/venue'
 require_relative 'helpers/errors'
 require_relative 'helpers/request-timer'
@@ -94,6 +95,19 @@ class VenueApp < Sinatra::Base
     body
       { :duration => request_timer_format(t),
         :records  => [venue]}.to_json
+  end
+
+  # Search for venues
+  get '/venues/search/:query' do
+    t = request_timer_start
+
+    results = Venue.full_text_search(params[:query])
+
+    status 200
+    headers["X-duration"] = request_timer_format(t)
+    body
+      { :duration => request_timer_format(t),
+        :records  => [results]}.to_json
   end
 
   # /venues
