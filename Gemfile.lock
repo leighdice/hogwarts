@@ -27,6 +27,7 @@ GEM
       mongoid (>= 3.0.0)
     moped (1.5.3)
     multi_json (1.11.2)
+    murmurhash3 (0.1.6)
     origin (1.1.0)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -64,6 +65,7 @@ DEPENDENCIES
   mongo
   mongoid
   mongoid_search
+  murmurhash3
   rack
   rack-test
   rake

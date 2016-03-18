@@ -3,6 +3,7 @@ require 'mongoid'
 require 'redis'
 require 'logger'
 require 'mongoid_search'
+require 'murmurhash3'
 require_relative 'models/venue'
 require_relative 'helpers/errors'
 require_relative 'helpers/request-timer'
@@ -101,13 +102,20 @@ class VenueApp < Sinatra::Base
   get '/venues/search/:query' do
     t = request_timer_start
 
-    results = Venue.full_text_search(params[:query])
+    search_text = MurmurHash3::V32.str_hash(params[:query])
+
+    if $redis.exists(search_text)
+      results = JSON.parse($redis.get(search_text))
+    else
+      results = Venue.full_text_search(params[:query])
+      $redis.set(search_text, results.to_json, :ex => 300)
+    end
 
     status 200
     headers["X-duration"] = request_timer_format(t)
     body
       { :duration => request_timer_format(t),
-        :records  => [results]}.to_json
+        :records  => results}.to_json
   end
 
   # /venues
