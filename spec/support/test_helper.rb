@@ -18,6 +18,7 @@ module TestHelper
   def expected_venue_record
     return {
       "_id" => "56e402521338596b67000030",
+      "_keywords" => ["anson", "bristol", "building", "richmond", "rooms"],
       "address_line_1" => "Richmond Building",
       "address_line_2" => "University of Bristol Students' Union",
       "address_line_3" => "105 Queens Rd",
