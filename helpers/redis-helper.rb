@@ -40,6 +40,23 @@ module RedisHelper
     $redis.hdel("venues", params[:id])
   end
 
+  def add_to_search_redis(query, results)
+    $redis.set(query, results.to_json, :ex => 300)
+  end
+
+  def get_from_search_redis(query)
+    search_text = MurmurHash3::V32.str_hash(query)
+
+    if $redis.exists(search_text)
+      results = JSON.parse($redis.get(search_text))
+      return results
+    else
+      results = Venue.full_text_search(query)
+      add_to_search_redis(search_text, results)
+      return results
+    end
+  end
+
   def can_use_redis?(request)
     if request.env["HTTP_X_NO_REDIS"] || ENV['USE_REDIS'] == false
       return false

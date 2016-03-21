@@ -102,13 +102,10 @@ class VenueApp < Sinatra::Base
   get '/venues/search/:query' do
     t = request_timer_start
 
-    search_text = MurmurHash3::V32.str_hash(params[:query])
-
-    if $redis.exists(search_text)
-      results = JSON.parse($redis.get(search_text))
+    if can_use_redis?(request)
+      results = get_from_search_redis(params[:query])
     else
       results = Venue.full_text_search(params[:query])
-      $redis.set(search_text, results.to_json, :ex => 300)
     end
 
     status 200
