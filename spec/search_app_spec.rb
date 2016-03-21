@@ -3,11 +3,13 @@ require_relative 'app_spec_helper'
 describe "Search" do
 
   describe "search by name" do
-    get 'venues/search/wembley'
+    get 'venues/search/blue'
     response = last_response
 
     it "should respond with venue matching the name" do
-      puts "TODO"
+      jdata = JSON.parse(response.body)
+      venue_object = jdata["records"].first
+      expect(venue_object).to match(expected_search_result_venue_record)
     end
 
     it "should response with code 200" do
@@ -20,11 +22,13 @@ describe "Search" do
   end
 
   describe "search by address" do
-    get 'venues/search/square'
+    get 'venues/search/eastern'
     response = last_response
 
     it "should respond with venues matching the address" do
-      puts "TODO"
+      jdata = JSON.parse(response.body)
+      venue_object = jdata["records"].first
+      expect(venue_object).to match(expected_search_result_venue_record)
     end
 
     it "should response with code 200" do
@@ -41,7 +45,12 @@ describe "Search" do
     response = last_response
 
     it "should respond with venues matching the city" do
-      puts "TODO"
+      jdata = JSON.parse(response.body)
+      records = jdata["records"]
+
+      records.each do |r|
+        expect(r["city"]).to eql("Manchester")
+      end
     end
 
     it "should response with code 200" do

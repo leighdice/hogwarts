@@ -32,6 +32,23 @@ module TestHelper
       }
   end
 
+  def expected_search_result_venue_record
+    return {
+      "_id" => "56e40252133859b09100002e",
+      "_keywords" => ["38", "blue", "eastern", "great", "last", "london", "old", "st", "the"],
+      "address_line_1" => "38 Great Eastern St",
+      "address_line_2" => "Shoreditch",
+      "address_line_3" => "",
+      "city" => "London",
+      "country" => "United Kingdom",
+      "county" => "",
+      "created_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/,
+      "name" => "The Old Blue Last",
+      "postcode" => "EC2A 3ES",
+      "updated_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/
+      }
+  end
+
   def updated_name_json
     return {
       "name" => "Rspec Test"
