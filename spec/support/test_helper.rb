@@ -18,6 +18,7 @@ module TestHelper
   def expected_venue_record
     return {
       "_id" => "56e402521338596b67000030",
+      "_keywords" => ["anson", "bristol", "building", "richmond", "rooms"],
       "address_line_1" => "Richmond Building",
       "address_line_2" => "University of Bristol Students' Union",
       "address_line_3" => "105 Queens Rd",
@@ -27,6 +28,23 @@ module TestHelper
       "created_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/,
       "name" => "Anson Rooms",
       "postcode" => "BS8 1LN",
+      "updated_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/
+      }
+  end
+
+  def expected_search_result_venue_record
+    return {
+      "_id" => "56e40252133859b09100002e",
+      "_keywords" => ["38", "blue", "eastern", "great", "last", "london", "old", "st", "the"],
+      "address_line_1" => "38 Great Eastern St",
+      "address_line_2" => "Shoreditch",
+      "address_line_3" => "",
+      "city" => "London",
+      "country" => "United Kingdom",
+      "county" => "",
+      "created_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/,
+      "name" => "The Old Blue Last",
+      "postcode" => "EC2A 3ES",
       "updated_at" => /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d/
       }
   end
