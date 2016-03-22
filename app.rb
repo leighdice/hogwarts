@@ -22,7 +22,7 @@ class VenueApp < Sinatra::Base
     Mongoid.configure do |config|
       config.sessions = {
         :default => {
-          :hosts => ["localhost:27017"] || ENV['MONGO_URL'], :database => "venues"
+          :hosts => ENV['MONGO_URL'] || ["localhost:27017"], :database => "venues"
         }
       }
 
