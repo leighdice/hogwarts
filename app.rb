@@ -16,22 +16,30 @@ class VenueApp < Sinatra::Base
   set :show_exceptions, false
 
   configure do
+    enable :logging, :dump_errors, :run, :sessions
+
+    # Connect to mongo
+    Mongoid.configure do |config|
+      config.sessions = {
+        :default => {
+          :hosts => ENV['MONGO_URL'] || ["localhost:27017"], :database => "venues"
+        }
+      }
+
+      Mongoid.raise_not_found_error = false
+    end
+
+    # Create Log file
     $logfile = File.open('venues.log', File::WRONLY | File::APPEND | File::CREAT)
     $logfile.sync = true
     $logger = Logger.new($logfile)
-  end
 
-  configure :development do
-    enable :logging, :dump_errors, :run, :sessions
-    Mongoid.load!(File.join(File.dirname(__FILE__), 'config/mongoid.yml'), :development)
-    Mongoid.raise_not_found_error = false
+    # Redis
     $redis = Redis.new(:host => ENV['REDIS_URL'] || "127.0.0.1", :port => ENV['REDIS_PORT'] || 6379)
-
-    # Ping redis to check connection
     begin
       $redis.ping
     rescue Exception => e
-      fail(e.message)
+      fail(e.message) if ENV['USE_REDIS']
     end
   end
 

@@ -7,9 +7,6 @@ services:
   - mongodb
   - redis
 
-before_script:
-  - make setup
-
 script:
   - bundle exec rake test
 
