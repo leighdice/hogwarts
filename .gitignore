@@ -2,3 +2,4 @@ test_data/eventList.json
 venue_app.pid
 dump.rdb
 venues.log
+.bundle/
