@@ -12,3 +12,6 @@ restart:
 	kill `cat venue_app.pid`
 	sleep 3
 	bundle exec ruby -S rackup -w config.ru
+
+test:
+	bundle exec rake test
