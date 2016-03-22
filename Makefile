@@ -1,6 +1,6 @@
 
 setup:
-	bundle install
+	bundle install --without test
 
 run:
 	bundle exec ruby -S rackup -w config.ru
