@@ -10,5 +10,5 @@ setup-test:
 	rm .bundle/config
 	bundle install
 
-test:
+test: setup-test
 	bundle exec rake test
