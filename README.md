@@ -19,5 +19,5 @@ make run
 
 ```
 wipe and restart redis-server
-bundle exec rake test
+make test
 ```
