@@ -7,7 +7,7 @@ run:
 	bundle exec ruby -S rackup -w config.ru
 
 setup-test:
-	rm .bundle/config
+	rm -f .bundle/config
 	bundle install
 
 test: setup-test
