@@ -1,4 +1,4 @@
-.PHONY setup run
+.PHONY: setup run
 
 setup:
 	bundle install --without test
