@@ -12,7 +12,6 @@ require_relative 'helpers/redis-helper'
 class VenueApp < Sinatra::Base
 
   helpers Errors, RequestTimer, RedisHelper
-  File.open('venue_app.pid', 'w') {|f| f.write Process.pid }
   set :show_exceptions, false
 
   configure do

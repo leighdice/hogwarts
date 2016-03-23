@@ -1,14 +1,13 @@
+.PHONY: setup run
 
 setup:
-	bundle install
+	bundle install --without test
 
 run:
-	bundle exec ruby -S rackup -w config.ru &
+	bundle exec ruby -S rackup -w config.ru
 
-stop:
-	kill `cat venue_app.pid`
+setup-test:
+	bundle install --with test
 
-restart:
-	kill `cat venue_app.pid`
-	sleep 3
-	bundle exec ruby -S rackup -w config.ru &
+test: setup-test
+	bundle exec rake test
