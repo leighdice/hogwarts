@@ -6,6 +6,9 @@ setup:
 run:
 	bundle exec ruby -S rackup -w config.ru
 
-test:
+setup-test:
 	rm .bundle/config
+	bundle install
+
+test:
 	bundle exec rake test
